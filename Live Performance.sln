@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Live Performance.Peristence
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Live Performance.Entity", "Live Performance.Entity\Live Performance.Entity.csproj", "{80CA1F1E-ED87-4B2A-8849-2F610884DC4D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Util.Tests", "Util.Tests\Util.Tests.csproj", "{479C87A5-473A-45BA-B1C0-EFE02F59FFED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{80CA1F1E-ED87-4B2A-8849-2F610884DC4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80CA1F1E-ED87-4B2A-8849-2F610884DC4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80CA1F1E-ED87-4B2A-8849-2F610884DC4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{479C87A5-473A-45BA-B1C0-EFE02F59FFED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{479C87A5-473A-45BA-B1C0-EFE02F59FFED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{479C87A5-473A-45BA-B1C0-EFE02F59FFED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{479C87A5-473A-45BA-B1C0-EFE02F59FFED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
