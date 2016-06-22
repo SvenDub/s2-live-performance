@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Live Performance.Persistenc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Live Performance.Persistence.Memory", "Live Performance.Persistence.Memory\Live Performance.Persistence.Memory.csproj", "{EE558031-9824-40F0-8B2C-FD106AD7445D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Live Performance.Peristence.Oracle", "Live Performance.Peristence.Oracle\Live Performance.Peristence.Oracle.csproj", "{EF6C19B3-842E-4708-A854-10C961087511}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{EE558031-9824-40F0-8B2C-FD106AD7445D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE558031-9824-40F0-8B2C-FD106AD7445D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE558031-9824-40F0-8B2C-FD106AD7445D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF6C19B3-842E-4708-A854-10C961087511}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF6C19B3-842E-4708-A854-10C961087511}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF6C19B3-842E-4708-A854-10C961087511}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF6C19B3-842E-4708-A854-10C961087511}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
