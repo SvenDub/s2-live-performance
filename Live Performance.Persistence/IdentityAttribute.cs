@@ -11,6 +11,6 @@ namespace Live_Performance.Persistence
         /// <summary>
         ///     The name of the column that contains the data.
         /// </summary>
-        public string Column { get; set; }
+        public string Column { get; set; } = "ID";
     }
 }
