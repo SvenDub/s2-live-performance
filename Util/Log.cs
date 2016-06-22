@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Util
 {
@@ -45,9 +46,15 @@ namespace Util
         public static void PrintLn(string tag, string level, string msg, ConsoleColor color)
         {
             Console.ForegroundColor = color;
-            Console.Write($"{DateTime.Now.ToString("HH:mm:ss:fff")} [{tag.PadRight(10).Substring(0, 10)}] [{level}] ");
+
+            string prefix = $"{DateTime.Now.ToString("HH:mm:ss:fff")} [{tag.PadRight(10).Substring(0, 10)}] [{level}] ";
+            Console.Write(prefix);
+            Debug.Write(prefix);
+
             Console.ResetColor();
+
             Console.WriteLine(msg);
+            Debug.WriteLine(msg);
         }
     }
 }
