@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Live Performance", "Live Pe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Live Performance.Tests", "Live Performance.Tests\Live Performance.Tests.csproj", "{6D272E2D-0427-44BC-A3C9-37EF192AD825}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inject", "Inject\Inject.csproj", "{07AE449C-CF08-4917-A6D5-0595E4B2E107}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Util", "Util\Util.csproj", "{AF3D9539-095A-4E19-99F2-ED579277224C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{6D272E2D-0427-44BC-A3C9-37EF192AD825}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D272E2D-0427-44BC-A3C9-37EF192AD825}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D272E2D-0427-44BC-A3C9-37EF192AD825}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07AE449C-CF08-4917-A6D5-0595E4B2E107}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07AE449C-CF08-4917-A6D5-0595E4B2E107}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07AE449C-CF08-4917-A6D5-0595E4B2E107}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07AE449C-CF08-4917-A6D5-0595E4B2E107}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF3D9539-095A-4E19-99F2-ED579277224C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF3D9539-095A-4E19-99F2-ED579277224C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF3D9539-095A-4E19-99F2-ED579277224C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF3D9539-095A-4E19-99F2-ED579277224C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
