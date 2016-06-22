@@ -8,6 +8,7 @@ using Inject;
 using Live_Performance.Persistence;
 using Live_Performance.Persistence.Exception;
 using Oracle.ManagedDataAccess.Client;
+using Oracle.ManagedDataAccess.Types;
 using Util;
 
 namespace Live_Performance.Peristence.Oracle
@@ -282,7 +283,7 @@ namespace Live_Performance.Peristence.Oracle
                     foreach (var keyValuePair in DataMembersWithoutIdentity)
                     {
                         i++;
-                        parameters[i] = $"@{keyValuePair.Value}";
+                        parameters[i] = $":{keyValuePair.Value}";
                     }
 
                     cmd.CommandText =
@@ -303,8 +304,9 @@ namespace Live_Performance.Peristence.Oracle
 
                     cmd.ExecuteNonQuery();
 
-                    T saved = FindOne((int) p.Value);
-                    SaveOneToMany(entity, saved, (int) p.Value);
+                    int id = ((OracleDecimal) p.Value).ToInt32();
+                    T saved = FindOne(id);
+                    SaveOneToMany(entity, saved, id);
                     return saved;
                 }
             }
@@ -482,7 +484,14 @@ namespace Live_Performance.Peristence.Oracle
                     // Set the Identity
                     if (keyValuePair.Key.IsDefined(typeof(IdentityAttribute)))
                     {
-                        keyValuePair.Key.SetValue(entity, reader[keyValuePair.Value]);
+                        object value = reader[keyValuePair.Value];
+
+                        if (keyValuePair.Key.PropertyType == typeof(int))
+                        {
+                            value = Convert.ToInt32(value);
+                        }
+
+                        keyValuePair.Key.SetValue(entity, value);
                     }
                     // Set DataMember
                     else if (keyValuePair.Key.IsDefined(typeof(DataMemberAttribute)))
@@ -548,7 +557,17 @@ namespace Live_Performance.Peristence.Oracle
                     switch (attribute.Type)
                     {
                         case DataType.Value:
-                            cmd.Parameters.Add(attribute.Column, keyValuePair.Key.GetValue(entity));
+                            // Boolean
+                            // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
+                            if (keyValuePair.Key.PropertyType == typeof (bool))
+                            {
+                                cmd.Parameters.Add(attribute.Column, (bool) keyValuePair.Key.GetValue(entity) ? 1 : 0);
+                            }
+                            // Generic
+                            else
+                            {
+                                cmd.Parameters.Add(attribute.Column, keyValuePair.Key.GetValue(entity));
+                            }
                             break;
                         case DataType.Entity:
                             object repo = typeof(OracleRepository<T>).GetMethod("ResolveRepository")
@@ -606,7 +625,17 @@ namespace Live_Performance.Peristence.Oracle
                         switch (attribute.Type)
                         {
                             case DataType.Value:
-                                cmd.Parameters.Add(attribute.Column, keyValuePair.Key.GetValue(entity));
+                                // Boolean
+                                // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
+                                if (keyValuePair.Key.PropertyType == typeof(bool))
+                                {
+                                    cmd.Parameters.Add(attribute.Column, (bool)keyValuePair.Key.GetValue(entity) ? 1 : 0);
+                                }
+                                // Generic
+                                else
+                                {
+                                    cmd.Parameters.Add(attribute.Column, keyValuePair.Key.GetValue(entity));
+                                }
                                 break;
                             case DataType.Entity:
                                 object repo = typeof(OracleRepository<T>).GetMethod("ResolveRepository")

@@ -1,0 +1,39 @@
+﻿@model Live_Performance.Entity.User
+
+@{
+    ViewBag.Title = "Registreren";
+}
+
+<h1>@ViewBag.Title</h1>
+
+@if (ViewBag.Failed)
+{
+    <div class="alert alert-dismissible alert-danger">
+        <h4>Registreren mislukt</h4>
+
+        @Html.ValidationSummary()
+    </div>
+}
+
+@using (Html.BeginForm("Signup", "Login", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("returnUrl", (string) ViewBag.RedirectUrl);
+
+<div class="form-group label-floating">
+        @Html.LabelFor(user => user.Name, new {@class = "control-label"})
+        @Html.EditorFor(user => user.Name, new {htmlAttributes = new {@class = "form-control"}})
+    </div>
+
+    <div class="form-group label-floating">
+        @Html.LabelFor(user => user.Email, new {@class = "control-label"})
+        @Html.EditorFor(user => user.Email, new {htmlAttributes = new {@class = "form-control"}})
+    </div>
+
+    <div class="form-group label-floating">
+        @Html.LabelFor(user => user.Password, new {@class = "control-label"})
+        @Html.EditorFor(user => user.Password, new {htmlAttributes = new {@class = "form-control"}})
+    </div>
+
+<input class="btn btn-primary btn-raised" type="submit" value="Registreren"/>
+}

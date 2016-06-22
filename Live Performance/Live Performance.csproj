@@ -135,11 +135,16 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\BudgetController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\TemperatureController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\AuthenticationAttribute.cs" />
     <Compile Include="Models\Budget.cs" />
+    <Compile Include="Models\EntityController.cs" />
+    <Compile Include="Models\InternationalizationAttribute.cs" />
+    <Compile Include="Models\SessionVars.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -176,6 +181,9 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
+    <Content Include="Views\Login\Index.cshtml" />
+    <Content Include="Views\Login\Signup.cshtml" />
+    <Content Include="Views\Login\Unauthorized.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -190,9 +198,21 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Inject\Inject.csproj">
+      <Project>{07AE449C-CF08-4917-A6D5-0595E4B2E107}</Project>
+      <Name>Inject</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Live Performance.Entity\Live Performance.Entity.csproj">
       <Project>{80CA1F1E-ED87-4B2A-8849-2F610884DC4D}</Project>
       <Name>Live Performance.Entity</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Live Performance.Peristence.Oracle\Live Performance.Peristence.Oracle.csproj">
+      <Project>{EF6C19B3-842E-4708-A854-10C961087511}</Project>
+      <Name>Live Performance.Peristence.Oracle</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Live Performance.Persistence\Live Performance.Persistence.csproj">
+      <Project>{ADE337A3-FB08-44A5-8606-5AA2EE98FD08}</Project>
+      <Name>Live Performance.Persistence</Name>
     </ProjectReference>
     <ProjectReference Include="..\Util\Util.csproj">
       <Project>{AF3D9539-095A-4E19-99F2-ED579277224C}</Project>

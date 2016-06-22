@@ -197,3 +197,5 @@ BEGIN
   FROM DUAL;
 END;
 /
+
+select * from "USER";

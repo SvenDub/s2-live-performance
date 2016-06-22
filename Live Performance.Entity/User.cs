@@ -1,4 +1,6 @@
 ﻿using Live_Performance.Persistence;
+using System.ComponentModel.DataAnnotations;
+using DataType = System.ComponentModel.DataAnnotations.DataType;
 
 namespace Live_Performance.Entity
 {
@@ -15,6 +17,7 @@ namespace Live_Performance.Entity
         public string Email { get; set; }
 
         [DataMember(Column = "PASSWORD")]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
 
         [DataMember(Column = "ADMIN")]
