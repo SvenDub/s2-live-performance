@@ -1,4 +1,6 @@
-﻿namespace Util
+﻿using System;
+
+namespace Util
 {
     public class Temperature
     {
@@ -10,7 +12,11 @@
         /// <returns>The wind chill.</returns>
         public static double WindChill(double temperature, double wind)
         {
-            return 0;
+            if (wind < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(wind), wind, "Wind speed cannot be negative");
+            }
+            return Math.Round(33 + (temperature - 33)*(0.474 + 0.454*Math.Sqrt(wind) - 0.0454*wind), 2);
         }
     }
 }
