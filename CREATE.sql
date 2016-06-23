@@ -200,6 +200,7 @@ END;
 /
 
 INSERT INTO "USER" (NAME, EMAIL, PASSWORD, ADMIN) VALUES ('Testert', 'test@example.org', 'test', 0);
+INSERT INTO "USER" (NAME, EMAIL, PASSWORD, ADMIN) VALUES ('Admin', 'admin@example.org', 'test', 1);
 
 INSERT INTO "ARTICLE" (NAME, COST) VALUES ('Zwemvest', 125);
 INSERT INTO "ARTICLE" (NAME, COST) VALUES ('Peddel', 125);

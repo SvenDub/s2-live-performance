@@ -1,0 +1,60 @@
+﻿@using Live_Performance.Entity
+@using Live_Performance.Models
+@model List<Live_Performance.Entity.Boat>
+
+@functions {
+    private bool IsAdmin()
+    {
+        return Session[SessionVars.User] != null && ((User) Session[SessionVars.User]).Admin;
+    }
+}
+
+@{
+    ViewBag.Title = "Boten";
+}
+
+<h1>@ViewBag.Title</h1>
+
+@if (IsAdmin())
+{
+    <input class="btn btn-primary btn-raised" type="button" onclick="location.href = '@Url.Action("New", "Boat")'" value="Nieuw"/>
+    <br/>
+    <br/>
+}
+
+<div class="list-group">
+    @foreach (Boat boat in Model)
+    {
+        <div class="list-group-item">
+            <div class="row-content">
+                <h4 class="list-group-item-heading">
+                    @Html.DisplayFor(list => boat.Name)
+                </h4>
+
+                <p class="list-group-item-text">
+                    @Html.DisplayNameFor(list => boat.BoatType): @Html.DisplayFor(list => boat.BoatType.Name)<br/>
+                    @Html.DisplayNameFor(list => boat.BoatType.Motorized): @Html.DisplayFor(list => boat.BoatType.Motorized)<br/>
+                    @if (boat.BoatType.Motorized)
+                    {
+                        <text>
+                            @Html.DisplayNameFor(list => boat.BoatType.Range): @Html.DisplayFor(list => boat.BoatType.Range)<br/>
+                        </text>
+                    }
+                    @if (IsAdmin())
+                    {
+                        <input class="btn btn-danger btn-raised" type="button" onclick="location.href = '@Url.Action("Delete", "Boat", new { id = @boat.Id})'" value="Delete" />
+                    }
+                </p>
+            </div>
+        </div>
+        <div class="list-group-separator"></div>
+    }
+    @if (Model.Count == 0)
+    {
+        <div class="alert alert-dismissible alert-warning">
+            <h4>Geen boten gevonden</h4>
+
+            <p>Probeer het later nog eens.</p>
+        </div>
+    }
+</div>
