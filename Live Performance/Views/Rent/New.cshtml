@@ -4,8 +4,35 @@
     ViewBag.Title = "Nieuwe Huur";
 }
 
+<script>
+    document.ready = function() {
+        $.fn.serializeObject = function() {
+            var o = {};
+            var a = this.serializeArray();
+            $.each(a, function() {
+                if (o[this.name] !== undefined) {
+                    if (!o[this.name].push) {
+                        o[this.name] = [o[this.name]];
+                    }
+                    o[this.name].push(this.value || '');
+                } else {
+                    o[this.name] = this.value || '';
+                }
+            });
+            return o;
+        };
+    };
+
+    function updateLakes() {
+        var data = $('#rentForm').serializeObject();
+        $.post('/api/Budget/Lakes', data, function(res) {
+                $('#lakes').text(res);
+            });
+        }
+</script>
+
 <h1>@ViewBag.Title</h1>
-@using (Html.BeginForm("New", "Rent"))
+@using (Html.BeginForm("New", "Rent", null, FormMethod.Post, new {id = "rentForm"}))
 {
     @Html.AntiForgeryToken()
     @Html.ValidationSummary()
@@ -14,18 +41,20 @@
 
     <div class="form-group">
         @Html.LabelFor(rent => rent.Begin, new {@class = "control-label"})
-        @Html.EditorFor(rent => rent.Begin, new {htmlAttributes = new {@class = "form-control"}})
+        @Html.EditorFor(rent => rent.Begin, new {htmlAttributes = new {@class = "form-control", onchange = "updateLakes();" } })
     </div>
 
     <div class="form-group">
         @Html.LabelFor(rent => rent.End, new {@class = "control-label"})
-        @Html.EditorFor(rent => rent.End, new {htmlAttributes = new {@class = "form-control"}})
+        @Html.EditorFor(rent => rent.End, new {htmlAttributes = new {@class = "form-control", onchange = "updateLakes();" } })
     </div>
 
     <div class="form-group label-floating">
-        @Html.LabelFor(rent => rent.Budget, new { @class = "control-label" })
-        @Html.EditorFor(rent => rent.Budget, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.LabelFor(rent => rent.Budget, new {@class = "control-label"})
+        @Html.EditorFor(rent => rent.Budget, new {htmlAttributes = new {@class = "form-control", onchange="updateLakes();"}})
     </div>
+
+    <p>Aantal meren: <span id="lakes">0</span></p>
 
     <div class="panel-group" id="accordion">
         <div class="panel panel-default">
@@ -42,9 +71,9 @@
                     {
                         <div class="form-group">
                             @Html.LabelFor(rent => rent.Articles[i].Article, new {@class = "control-label"})
-                            @Html.DropDownListFor(rent => rent.Articles[i].Article.Id, (IEnumerable<SelectListItem>) ViewBag.AvailableArticles, new {@class = "form-control"})
+                            @Html.DropDownListFor(rent => rent.Articles[i].Article.Id, (IEnumerable<SelectListItem>) ViewBag.AvailableArticles, new {@class = "form-control", onchange = "updateLakes();" })
                             @Html.LabelFor(rent => rent.Articles[i].Amount, new {@class = "control-label"})
-                            @Html.EditorFor(rent => rent.Articles[i].Amount, new {htmlAttributes = new {@class = "form-control"}})
+                            @Html.EditorFor(rent => rent.Articles[i].Amount, new {htmlAttributes = new {@class = "form-control", onchange = "updateLakes();" } })
                         </div>
                     }
                 </div>
@@ -65,7 +94,7 @@
                     {
                         <div class="form-group">
                             @Html.LabelFor(rent => rent.Boats[i].Boat, new {@class = "control-label"})
-                            @Html.DropDownListFor(rent => rent.Boats[i].Boat.Id, (IEnumerable<SelectListItem>) ViewBag.AvailableBoats, new {@class = "form-control"})
+                            @Html.DropDownListFor(rent => rent.Boats[i].Boat.Id, (IEnumerable<SelectListItem>) ViewBag.AvailableBoats, new {@class = "form-control", onchange = "updateLakes();" })
                         </div>
                     }
                 </div>
@@ -86,7 +115,7 @@
                     {
                         <div class="form-group">
                             @Html.LabelFor(rent => rent.Areas[i].Area, new { @class = "control-label" })
-                            @Html.DropDownListFor(rent => rent.Areas[i].Area.Id, (IEnumerable<SelectListItem>)ViewBag.AvailableAreas, new { @class = "form-control" })
+                            @Html.DropDownListFor(rent => rent.Areas[i].Area.Id, (IEnumerable<SelectListItem>)ViewBag.AvailableAreas, new { @class = "form-control", onchange = "updateLakes();" })
                         </div>
                     }
                 </div>

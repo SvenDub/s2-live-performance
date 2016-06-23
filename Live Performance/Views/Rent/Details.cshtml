@@ -97,3 +97,9 @@ Meren: @Budget.LakesForBudget(Model, Model.Budget)
         </div>
     }
 </div>
+
+<script>
+    var data = @Html.Raw(Json.Encode(Model));
+    console.log(data);
+
+</script>
