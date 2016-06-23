@@ -31,33 +31,5 @@ namespace Live_Performance.Entity
 
         [DataMember(Type = DataType.OneToManyEntity)]
         public List<BoatRent> Boats { get; set; } = new List<BoatRent>();
-
-        protected bool Equals(Rent other)
-        {
-            return Id == other.Id;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((Rent) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return Id;
-        }
-
-        public static bool operator ==(Rent left, Rent right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(Rent left, Rent right)
-        {
-            return !Equals(left, right);
-        }
     }
 }

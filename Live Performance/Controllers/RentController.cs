@@ -14,6 +14,7 @@ namespace Live_Performance.Controllers
     {
         private readonly IRepository<Area> _areaRepository = Injector.Resolve<IRepository<Area>>();
         private readonly IRepository<Article> _articleRepository = Injector.Resolve<IRepository<Article>>();
+        private readonly IRepository<ArticleRent> _articleRentRepository = Injector.Resolve<IRepository<ArticleRent>>();
         private readonly IRepository<Boat> _boatRepository = Injector.Resolve<IRepository<Boat>>();
 
         public ActionResult Index()
@@ -30,13 +31,10 @@ namespace Live_Performance.Controllers
         public ActionResult Details(int id)
         {
             User user = (User) Session[SessionVars.User];
-            if (user.Admin)
-            {
-                return View(Repository.FindOne(id));
-            }
-
             Rent rent = Repository.FindOne(id);
-            if (rent.User == user)
+            rent.Articles = _articleRentRepository.FindAllWhere(articleRent => articleRent.Rent == id);
+
+            if (user.Admin || rent.User == user)
             {
                 return View(rent);
             }
@@ -47,7 +45,7 @@ namespace Live_Performance.Controllers
         public ActionResult New()
         {
             ViewBag.AvailableArticles = new SelectList(new List<Article> {new Article {Id = -1, Name = "Geen"}}.Concat(_articleRepository.FindAll()), "Id", "Name");
-            ViewBag.AvailableBoats = _boatRepository.FindAll();
+            ViewBag.AvailableBoats = new SelectList(new List<Boat> {new Boat {Id = -1, Name = "Geen"} }.Concat(_boatRepository.FindAll()));
 
             return View();
         }

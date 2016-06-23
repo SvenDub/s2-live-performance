@@ -22,5 +22,33 @@ namespace Live_Performance.Entity
 
         [DataMember(Column = "ADMIN")]
         public bool Admin { get; set; }
+
+        protected bool Equals(User other)
+        {
+            return Id == other.Id;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((User) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id;
+        }
+
+        public static bool operator ==(User left, User right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(User left, User right)
+        {
+            return !Equals(left, right);
+        }
     }
 }

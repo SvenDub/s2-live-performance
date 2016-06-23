@@ -1,2 +1,43 @@
-﻿@model Live_Performance.Entity.Rent
+﻿@using Live_Performance.Entity
+@model Live_Performance.Entity.Rent
 
+@{
+    ViewBag.Title = "Huur";
+}
+
+<h1>@ViewBag.Title</h1>
+@if (Model == null)
+{
+    <p>Huur niet gevonden.</p>
+    return;
+}
+
+@Html.DisplayNameFor(rent => rent.User): @Html.DisplayFor(rent => rent.User.Name)<br>
+
+<h2>Artikelen</h2>
+<div class="list-group">
+    @foreach (ArticleRent articleRent in Model.Articles)
+    {
+        <div class="list-group-item">
+            <div class="row-content">
+                <div class="least-content">@Html.DisplayFor(rent => articleRent.Amount)</div>
+                <h4 class="list-group-item-heading">
+                    @Html.DisplayFor(rent => articleRent.Article.Name)
+                </h4>
+
+                <p class="list-group-item-text">
+                    @Html.DisplayFor(rent => articleRent.Article.Cost)
+                </p>
+            </div>
+        </div>
+        <div class="list-group-separator"></div>
+    }
+    @if (Model.Articles.Count == 0)
+    {
+        <div class="alert alert-dismissible alert-warning">
+            <h4>Geen artikelen toegevoegd</h4>
+
+            <p>Probeer het later nog eens.</p>
+        </div>
+    }
+</div>
