@@ -23,6 +23,9 @@ namespace Live_Performance.Entity
         [DataMember(Column = "RENTER", Type = DataType.Entity)]
         public User User { get; set; }
 
+        [DataMember(Column = "BUDGET")]
+        public int Budget { get; set; }
+
         [DataMember(Type = DataType.OneToManyEntity)]
         public List<AreaRent> Areas { get; set; } = new List<AreaRent>();
 

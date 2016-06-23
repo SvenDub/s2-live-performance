@@ -1,4 +1,5 @@
 ﻿@using Live_Performance.Entity
+@using Live_Performance.Models
 @model Live_Performance.Entity.Rent
 
 @{
@@ -13,6 +14,7 @@
 }
 
 @Html.DisplayNameFor(rent => rent.User): @Html.DisplayFor(rent => rent.User.Name)<br>
+Meren: @Budget.LakesForBudget(Model, Model.Budget)
 
 <h2>Boten</h2>
 <div class="list-group">
