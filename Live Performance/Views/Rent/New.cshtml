@@ -59,8 +59,29 @@
                     @for (int i = 0; i < 5; i++)
                     {
                         <div class="form-group">
-                            @Html.LabelFor(rent => rent.Boats[i].Boat, new { @class = "control-label" })
-                            @Html.DropDownListFor(rent => rent.Boats[i].Boat.Id, (IEnumerable<SelectListItem>)ViewBag.AvailableBoats, new { @class = "form-control" })
+                            @Html.LabelFor(rent => rent.Boats[i].Boat, new {@class = "control-label"})
+                            @Html.DropDownListFor(rent => rent.Boats[i].Boat.Id, (IEnumerable<SelectListItem>) ViewBag.AvailableBoats, new {@class = "form-control"})
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#gebieden">
+                        Gebieden
+                    </a>
+                </h4>
+            </div>
+            <div id="gebieden" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    @for (int i = 0; i < 5; i++)
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(rent => rent.Areas[i].Area, new { @class = "control-label" })
+                            @Html.DropDownListFor(rent => rent.Areas[i].Area.Id, (IEnumerable<SelectListItem>)ViewBag.AvailableAreas, new { @class = "form-control" })
                         </div>
                     }
                 </div>

@@ -25,7 +25,7 @@
                 </h4>
 
                 <p class="list-group-item-text">
-                    @Html.DisplayFor(rent => boatRent.Boat.BoatType.Cost)
+                    @Html.DisplayFor(rent => boatRent.Cost)
                 </p>
             </div>
         </div>
@@ -53,7 +53,7 @@
                 </h4>
 
                 <p class="list-group-item-text">
-                    @Html.DisplayFor(rent => articleRent.Article.Cost)
+                    @Html.DisplayFor(rent => articleRent.Cost)
                 </p>
             </div>
         </div>
@@ -63,6 +63,33 @@
     {
         <div class="alert alert-dismissible alert-warning">
             <h4>Geen artikelen toegevoegd</h4>
+
+            <p>Probeer het later nog eens.</p>
+        </div>
+    }
+</div>
+
+<h2>Gebieden</h2>
+<div class="list-group">
+    @foreach (AreaRent areaRent in Model.Areas)
+    {
+        <div class="list-group-item">
+            <div class="row-content">
+                <h4 class="list-group-item-heading">
+                    @Html.DisplayFor(rent => areaRent.Area.Name)
+                </h4>
+
+                <p class="list-group-item-text">
+                    @Html.DisplayFor(rent => areaRent.Cost)
+                </p>
+            </div>
+        </div>
+        <div class="list-group-separator"></div>
+    }
+    @if (Model.Articles.Count == 0)
+    {
+        <div class="alert alert-dismissible alert-warning">
+            <h4>Geen boten toegevoegd</h4>
 
             <p>Probeer het later nog eens.</p>
         </div>

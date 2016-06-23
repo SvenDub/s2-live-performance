@@ -13,6 +13,7 @@ namespace Live_Performance.Controllers
     public class RentController : EntityController<Rent>
     {
         private readonly IRepository<Area> _areaRepository = Injector.Resolve<IRepository<Area>>();
+        private readonly IRepository<AreaRent> _areaRentRepository = Injector.Resolve<IRepository<AreaRent>>();
         private readonly IRepository<Article> _articleRepository = Injector.Resolve<IRepository<Article>>();
         private readonly IRepository<ArticleRent> _articleRentRepository = Injector.Resolve<IRepository<ArticleRent>>();
         private readonly IRepository<Boat> _boatRepository = Injector.Resolve<IRepository<Boat>>();
@@ -35,6 +36,7 @@ namespace Live_Performance.Controllers
             Rent rent = Repository.FindOne(id);
             rent.Articles = _articleRentRepository.FindAllWhere(articleRent => articleRent.Rent == id);
             rent.Boats = _boatRentRepository.FindAllWhere(boatRent => boatRent.Rent == id);
+            rent.Areas = _areaRentRepository.FindAllWhere(areaRent => areaRent.Rent == id);
 
             if (user.Admin || rent.User == user)
             {
@@ -48,6 +50,9 @@ namespace Live_Performance.Controllers
         {
             ViewBag.AvailableArticles = new SelectList(new List<Article> {new Article {Id = -1, Name = "Geen"}}.Concat(_articleRepository.FindAll()), "Id", "Name");
             ViewBag.AvailableBoats = new SelectList(new List<Boat> {new Boat {Id = -1, Name = "Geen"} }.Concat(_boatRepository.FindAll()), "Id", "Display");
+            ViewBag.AvailableAreas =
+                new SelectList(new List<Area> {new Area {Id = -1, Name = "Geen"}}.Concat(_areaRepository.FindAll()),
+                    "Id", "Name");
 
             return View();
         }
@@ -71,6 +76,13 @@ namespace Live_Performance.Controllers
             {
                 boatRent.Boat = _boatRepository.FindOne(boatRent.Boat.Id);
                 boatRent.Cost = boatRent.Boat.BoatType.Cost;
+            });
+
+            rent.Areas.RemoveAll(areaRent => areaRent.Area.Id == -1);
+            rent.Areas.ForEach(areaRent =>
+            {
+                areaRent.Area = _areaRepository.FindOne(areaRent.Area.Id);
+                areaRent.Cost = areaRent.Area.Cost;
             });
 
             Rent saved = Repository.Save(rent);
