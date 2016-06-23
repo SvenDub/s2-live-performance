@@ -1,0 +1,53 @@
+﻿@using Live_Performance.Entity
+@using Live_Performance.Models
+@model List<Article>
+
+@functions {
+    private bool IsAdmin()
+    {
+        return Session[SessionVars.User] != null && ((User) Session[SessionVars.User]).Admin;
+    }
+}
+
+@{
+    ViewBag.Title = "Artikelen";
+}
+
+<h1>@ViewBag.Title</h1>
+
+@if (IsAdmin())
+{
+    <input class="btn btn-primary btn-raised" type="button" onclick="location.href = '@Url.Action("New", "Article")'" value="Nieuw"/>
+    <br/>
+    <br/>
+}
+
+<div class="list-group">
+    @foreach (Article article in Model)
+    {
+        <div class="list-group-item">
+            <div class="row-content">
+                <h4 class="list-group-item-heading">
+                    @Html.DisplayFor(list => article.Name)
+                </h4>
+
+                <p class="list-group-item-text">
+                    @Html.DisplayNameFor(list => article.Cost): @Html.DisplayFor(list => article.Cost)<br/>
+                    @if (IsAdmin())
+                    {
+                        <input class="btn btn-danger btn-raised" type="button" onclick="location.href = '@Url.Action("Delete", "Article", new { id = @article.Id})'" value="Delete" />
+                    }
+                </p>
+            </div>
+        </div>
+        <div class="list-group-separator"></div>
+    }
+    @if (Model.Count == 0)
+    {
+        <div class="alert alert-dismissible alert-warning">
+            <h4>Geen artikelen gevonden</h4>
+
+            <p>Probeer het later nog eens.</p>
+        </div>
+    }
+</div>
