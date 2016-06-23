@@ -1,4 +1,6 @@
-﻿using System.Web;
+﻿using System.Net.Http.Formatting;
+using System.Net.Http.Headers;
+using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -27,6 +29,12 @@ namespace Live_Performance
                 .JsonFormatter
                 .SerializerSettings
                 .DefaultValueHandling = DefaultValueHandling.Include;
+
+            GlobalConfiguration.Configuration.Formatters.JsonFormatter.MediaTypeMappings.Add(
+                new QueryStringMapping("type", "json", new MediaTypeHeaderValue("application/json")));
+
+            GlobalConfiguration.Configuration.Formatters.XmlFormatter.MediaTypeMappings.Add(
+                new QueryStringMapping("type", "xml", new MediaTypeHeaderValue("application/xml")));
         }
     }
 }
