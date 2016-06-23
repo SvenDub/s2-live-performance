@@ -18,12 +18,6 @@ namespace Live_Performance.Peristence.Oracle
     /// </summary>
     public class OracleRepository<T> : IStrictRepository<T> where T : new()
     {
-        /// <summary>
-        ///     Connection parameters to use.
-        /// </summary>
-        public IOracleConnectionParams OracleConnectionParams { set; protected get; } =
-            Injector.Resolve<IOracleConnectionParams>();
-
         private readonly EntityAttribute _entityAttribute;
         private readonly IdentityAttribute _identityAttribute;
         private readonly PropertyInfo _identityProperty;
@@ -33,32 +27,78 @@ namespace Live_Performance.Peristence.Oracle
         /// </summary>
         public OracleRepository()
         {
-            MemberInfo info = typeof(T);
+            MemberInfo info = typeof (T);
 
             if (!info.GetCustomAttributes(true).Any(attr => attr is EntityAttribute))
             {
-                throw new EntityException($"Type {typeof(T)} is not attributed with Entity");
+                throw new EntityException($"Type {typeof (T)} is not attributed with Entity");
             }
 
             _entityAttribute = info.GetCustomAttributes(true)
                 .OfType<EntityAttribute>()
                 .First();
 
-            PropertyInfo[] properties = typeof(T).GetProperties();
+            PropertyInfo[] properties = typeof (T).GetProperties();
 
-            if (!properties.Any(propertyInfo => propertyInfo.IsDefined(typeof(IdentityAttribute))))
+            if (!properties.Any(propertyInfo => propertyInfo.IsDefined(typeof (IdentityAttribute))))
             {
-                throw new EntityException($"Type {typeof(T)} has no property attributed with Identity");
+                throw new EntityException($"Type {typeof (T)} has no property attributed with Identity");
             }
 
             _identityProperty = properties
-                .First(propertyInfo => propertyInfo.IsDefined(typeof(IdentityAttribute)));
+                .First(propertyInfo => propertyInfo.IsDefined(typeof (IdentityAttribute)));
             _identityAttribute = _identityProperty.GetCustomAttributes(true)
                 .OfType<IdentityAttribute>()
                 .First();
 
             Log.D("DB", _entityAttribute.Table + " [ " + string.Join(", ", DataMembers.Values) + " ]");
         }
+
+        /// <summary>
+        ///     Connection parameters to use.
+        /// </summary>
+        public IOracleConnectionParams OracleConnectionParams { set; protected get; } =
+            Injector.Resolve<IOracleConnectionParams>();
+
+        /// <summary>
+        ///     All properties attributed with <see cref="DataMemberAttribute" /> and their Column name.
+        /// </summary>
+        private Dictionary<PropertyInfo, string> DataMembers => typeof (T)
+            .GetProperties()
+            .Where(propertyInfo => propertyInfo.IsDefined(typeof (IdentityAttribute), true))
+            .Select(
+                propertyInfo =>
+                    new KeyValuePair<PropertyInfo, string>(propertyInfo,
+                        propertyInfo.GetCustomAttribute<IdentityAttribute>(true).Column))
+            .Concat(DataMembersWithoutIdentity)
+            .ToDictionary(pair => pair.Key, pair => pair.Value);
+
+        /// <summary>
+        ///     All properties attributed with <see cref="DataMemberAttribute" /> except <see cref="IdentityAttribute" /> and their
+        ///     Column name.
+        /// </summary>
+        private Dictionary<PropertyInfo, string> DataMembersWithoutIdentity => typeof (T)
+            .GetProperties()
+            .Where(
+                propertyInfo =>
+                    propertyInfo.IsDefined(typeof (DataMemberAttribute), true) &&
+                    propertyInfo.GetCustomAttribute<DataMemberAttribute>().Type != DataType.OneToManyEntity)
+            .Select(
+                propertyInfo =>
+                    new KeyValuePair<PropertyInfo, string>(propertyInfo,
+                        propertyInfo.GetCustomAttribute<DataMemberAttribute>(true).Column))
+            .ToDictionary(pair => pair.Key, pair => pair.Value);
+
+        /// <summary>
+        ///     All properties attributed with <see cref="DataType.OneToManyEntity" />.
+        /// </summary>
+        private List<PropertyInfo> DataMembersOneToMany => typeof (T)
+            .GetProperties()
+            .Where(
+                propertyInfo =>
+                    propertyInfo.IsDefined(typeof (DataMemberAttribute), true) &&
+                    propertyInfo.GetCustomAttribute<DataMemberAttribute>().Type == DataType.OneToManyEntity)
+            .ToList();
 
         public long Count()
         {
@@ -229,6 +269,11 @@ namespace Live_Performance.Peristence.Oracle
             }
         }
 
+        public List<T> Save(List<T> entities)
+        {
+            return entities.Select(Save).ToList();
+        }
+
         /// <summary>
         ///     Update an entity with the given id.
         /// </summary>
@@ -280,7 +325,7 @@ namespace Live_Performance.Peristence.Oracle
                 {
                     string[] parameters = new string[DataMembersWithoutIdentity.Count];
                     int i = -1;
-                    foreach (var keyValuePair in DataMembersWithoutIdentity)
+                    foreach (KeyValuePair<PropertyInfo, string> keyValuePair in DataMembersWithoutIdentity)
                     {
                         i++;
                         parameters[i] = $":{keyValuePair.Value}";
@@ -313,24 +358,24 @@ namespace Live_Performance.Peristence.Oracle
         }
 
         /// <summary>
-        ///     Save all <see cref="DataType.OneToManyEntity"/> properties after the entity itself has been saved.
+        ///     Save all <see cref="DataType.OneToManyEntity" /> properties after the entity itself has been saved.
         ///     The new id has to be known at this point.
         /// </summary>
         /// <param name="entity">The old entity.</param>
         /// <param name="saved">The saved entity.</param>
         /// <param name="id">The id of the saved entity.</param>
-        /// <exception cref="EntityException">If <see cref="DataType.OneToManyEntity"/> was incorrectly defined.</exception>
+        /// <exception cref="EntityException">If <see cref="DataType.OneToManyEntity" /> was incorrectly defined.</exception>
         private void SaveOneToMany(T entity, T saved, int id)
         {
             DataMembersOneToMany.ForEach(key =>
             {
                 if (key.PropertyType.IsGenericType && key.PropertyType.GetGenericTypeDefinition()
-                    == typeof(List<>))
+                    == typeof (List<>))
                 {
                     Type itemType = key.PropertyType.GetGenericArguments()[0];
 
                     // Save one to many entities to their repo
-                    object repo = typeof(OracleRepository<T>).GetMethod("ResolveRepository")
+                    object repo = typeof (OracleRepository<T>).GetMethod("ResolveRepository")
                         .MakeGenericMethod(itemType)
                         .Invoke(this, new object[] {});
 
@@ -341,8 +386,8 @@ namespace Live_Performance.Peristence.Oracle
                             .GetProperties()
                             .Where(
                                 info =>
-                                    info.IsDefined(typeof(DataMemberAttribute)) &&
-                                    info.GetCustomAttribute<DataMemberAttribute>().RawType == typeof(T))
+                                    info.IsDefined(typeof (DataMemberAttribute)) &&
+                                    info.GetCustomAttribute<DataMemberAttribute>().RawType == typeof (T))
                             .ToList()
                             .ForEach(info => info.SetValue(e, id));
                     });
@@ -360,11 +405,6 @@ namespace Live_Performance.Peristence.Oracle
             });
         }
 
-        public List<T> Save(List<T> entities)
-        {
-            return entities.Select(Save).ToList();
-        }
-
         /// <summary>
         ///     Open a new connection to the database.
         /// </summary>
@@ -372,11 +412,13 @@ namespace Live_Performance.Peristence.Oracle
         /// <exception cref="ConnectException">When the connection could not be established.</exception>
         private OracleConnection CreateConnection()
         {
-            string connectionString = "Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=" + OracleConnectionParams.Host +
-                                           ")(PORT=" + OracleConnectionParams.Port + ")))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=" +
-                                           OracleConnectionParams.ServiceName + ")));" +
-                                           "User ID=" + OracleConnectionParams.Username + ";" +
-                                           "PASSWORD=" + OracleConnectionParams.Password + ";";
+            string connectionString = "Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=" +
+                                      OracleConnectionParams.Host +
+                                      ")(PORT=" + OracleConnectionParams.Port +
+                                      ")))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=" +
+                                      OracleConnectionParams.ServiceName + ")));" +
+                                      "User ID=" + OracleConnectionParams.Username + ";" +
+                                      "PASSWORD=" + OracleConnectionParams.Password + ";";
 
             try
             {
@@ -390,45 +432,6 @@ namespace Live_Performance.Peristence.Oracle
                 throw new ConnectException(e);
             }
         }
-
-        /// <summary>
-        ///     All properties attributed with <see cref="DataMemberAttribute"/> and their Column name.
-        /// </summary>
-        private Dictionary<PropertyInfo, string> DataMembers => typeof(T)
-            .GetProperties()
-            .Where(propertyInfo => propertyInfo.IsDefined(typeof(IdentityAttribute), true))
-            .Select(
-                propertyInfo =>
-                    new KeyValuePair<PropertyInfo, string>(propertyInfo,
-                        propertyInfo.GetCustomAttribute<IdentityAttribute>(true).Column))
-            .Concat(DataMembersWithoutIdentity)
-            .ToDictionary(pair => pair.Key, pair => pair.Value);
-
-        /// <summary>
-        ///     All properties attributed with <see cref="DataMemberAttribute"/> except <see cref="IdentityAttribute"/> and their Column name.
-        /// </summary>
-        private Dictionary<PropertyInfo, string> DataMembersWithoutIdentity => typeof(T)
-            .GetProperties()
-            .Where(
-                propertyInfo =>
-                    propertyInfo.IsDefined(typeof(DataMemberAttribute), true) &&
-                    propertyInfo.GetCustomAttribute<DataMemberAttribute>().Type != DataType.OneToManyEntity)
-            .Select(
-                propertyInfo =>
-                    new KeyValuePair<PropertyInfo, string>(propertyInfo,
-                        propertyInfo.GetCustomAttribute<DataMemberAttribute>(true).Column))
-            .ToDictionary(pair => pair.Key, pair => pair.Value);
-
-        /// <summary>
-        ///     All properties attributed with <see cref="DataType.OneToManyEntity"/>.
-        /// </summary>
-        private List<PropertyInfo> DataMembersOneToMany => typeof(T)
-            .GetProperties()
-            .Where(
-                propertyInfo =>
-                    propertyInfo.IsDefined(typeof(DataMemberAttribute), true) &&
-                    propertyInfo.GetCustomAttribute<DataMemberAttribute>().Type == DataType.OneToManyEntity)
-            .ToList();
 
         /// <summary>
         ///     Create a new entity from the given reader.
@@ -476,17 +479,17 @@ namespace Live_Performance.Peristence.Oracle
             try
             {
                 T entity = new T();
-                foreach (var keyValuePair in DataMembers)
+                foreach (KeyValuePair<PropertyInfo, string> keyValuePair in DataMembers)
                 {
                     // Do not set null values
                     if (reader.IsDBNull(reader.GetOrdinal(keyValuePair.Value))) continue;
 
                     // Set the Identity
-                    if (keyValuePair.Key.IsDefined(typeof(IdentityAttribute)))
+                    if (keyValuePair.Key.IsDefined(typeof (IdentityAttribute)))
                     {
                         object value = reader[keyValuePair.Value];
 
-                        if (keyValuePair.Key.PropertyType == typeof(int))
+                        if (keyValuePair.Key.PropertyType == typeof (int))
                         {
                             value = Convert.ToInt32(value);
                         }
@@ -494,7 +497,7 @@ namespace Live_Performance.Peristence.Oracle
                         keyValuePair.Key.SetValue(entity, value);
                     }
                     // Set DataMember
-                    else if (keyValuePair.Key.IsDefined(typeof(DataMemberAttribute)))
+                    else if (keyValuePair.Key.IsDefined(typeof (DataMemberAttribute)))
                     {
                         DataMemberAttribute attribute = keyValuePair.Key.GetCustomAttribute<DataMemberAttribute>();
 
@@ -502,27 +505,32 @@ namespace Live_Performance.Peristence.Oracle
                         {
                             // Set raw value. Perform conversion if necessary and supported.
                             case DataType.Value:
+                            {
+                                object value = reader[keyValuePair.Value];
+
                                 // Boolean
-                                // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
-                                if (keyValuePair.Key.PropertyType == typeof(bool))
+                                if (keyValuePair.Key.PropertyType == typeof (bool))
                                 {
-                                    keyValuePair.Key.SetValue(entity, Convert.ToBoolean(reader[keyValuePair.Value]));
+                                    value = Convert.ToBoolean(value);
                                 }
-                                // Generic
-                                else
+                                else if (keyValuePair.Key.PropertyType == typeof (int))
                                 {
-                                    keyValuePair.Key.SetValue(entity, reader[keyValuePair.Value]);
+                                    value = Convert.ToInt32(value);
                                 }
+                                keyValuePair.Key.SetValue(entity, value);
                                 break;
+                            }
                             // Resolve entity from other IRepository
                             case DataType.Entity:
-                                object repo = typeof(OracleRepository<T>).GetMethod("ResolveRepository")
+                            {
+                                object repo = typeof (OracleRepository<T>).GetMethod("ResolveRepository")
                                     .MakeGenericMethod(keyValuePair.Key.PropertyType)
                                     .Invoke(this, new object[] {});
                                 object value = repo.GetType().GetMethod("FindOne")
-                                    .Invoke(repo, new object[] {reader[keyValuePair.Value]});
+                                    .Invoke(repo, new object[] {Convert.ToInt32(reader[keyValuePair.Value])});
                                 keyValuePair.Key.SetValue(entity, value);
                                 break;
+                            }
                             // Resolve one to many entities
                             case DataType.OneToManyEntity:
                                 break;
@@ -550,7 +558,7 @@ namespace Live_Performance.Peristence.Oracle
         {
             try
             {
-                foreach (var keyValuePair in DataMembersWithoutIdentity)
+                foreach (KeyValuePair<PropertyInfo, string> keyValuePair in DataMembersWithoutIdentity)
                 {
                     DataMemberAttribute attribute = keyValuePair.Key.GetCustomAttribute<DataMemberAttribute>();
 
@@ -570,17 +578,17 @@ namespace Live_Performance.Peristence.Oracle
                             }
                             break;
                         case DataType.Entity:
-                            object repo = typeof(OracleRepository<T>).GetMethod("ResolveRepository")
+                            object repo = typeof (OracleRepository<T>).GetMethod("ResolveRepository")
                                 .MakeGenericMethod(keyValuePair.Key.PropertyType)
                                 .Invoke(this, new object[] {});
 
                             object nestedEntity = repo.GetType()
-                                .GetMethod("Save", new Type[] {keyValuePair.Key.PropertyType})
-                                .Invoke(repo, new object[] {keyValuePair.Key.GetValue(entity)});
+                                .GetMethod("Save", new[] {keyValuePair.Key.PropertyType})
+                                .Invoke(repo, new[] {keyValuePair.Key.GetValue(entity)});
 
                             object nestedId = nestedEntity.GetType()
                                 .GetProperties()
-                                .First(propertyInfo => propertyInfo.IsDefined(typeof(IdentityAttribute)))
+                                .First(propertyInfo => propertyInfo.IsDefined(typeof (IdentityAttribute)))
                                 .GetValue(nestedEntity);
                             cmd.Parameters.Add(attribute.Column, nestedId);
                             break;
@@ -608,16 +616,16 @@ namespace Live_Performance.Peristence.Oracle
         {
             try
             {
-                foreach (var keyValuePair in DataMembers)
+                foreach (KeyValuePair<PropertyInfo, string> keyValuePair in DataMembers)
                 {
-                    if (keyValuePair.Key.IsDefined(typeof(IdentityAttribute)))
+                    /*if (keyValuePair.Key.IsDefined(typeof (IdentityAttribute)))
                     {
                         IdentityAttribute attribute =
                             keyValuePair.Key.GetCustomAttribute<IdentityAttribute>();
 
                         cmd.Parameters.Add(attribute.Column, keyValuePair.Key.GetValue(entity));
                     }
-                    else if (keyValuePair.Key.IsDefined(typeof(DataMemberAttribute)))
+                    else */if (keyValuePair.Key.IsDefined(typeof (DataMemberAttribute)))
                     {
                         DataMemberAttribute attribute =
                             keyValuePair.Key.GetCustomAttribute<DataMemberAttribute>();
@@ -627,9 +635,10 @@ namespace Live_Performance.Peristence.Oracle
                             case DataType.Value:
                                 // Boolean
                                 // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
-                                if (keyValuePair.Key.PropertyType == typeof(bool))
+                                if (keyValuePair.Key.PropertyType == typeof (bool))
                                 {
-                                    cmd.Parameters.Add(attribute.Column, (bool)keyValuePair.Key.GetValue(entity) ? 1 : 0);
+                                    cmd.Parameters.Add(attribute.Column,
+                                        (bool) keyValuePair.Key.GetValue(entity) ? 1 : 0);
                                 }
                                 // Generic
                                 else
@@ -638,15 +647,15 @@ namespace Live_Performance.Peristence.Oracle
                                 }
                                 break;
                             case DataType.Entity:
-                                object repo = typeof(OracleRepository<T>).GetMethod("ResolveRepository")
+                                object repo = typeof (OracleRepository<T>).GetMethod("ResolveRepository")
                                     .MakeGenericMethod(keyValuePair.Key.PropertyType)
                                     .Invoke(this, new object[] {});
                                 object nestedEntity = repo.GetType()
-                                    .GetMethod("Save", new Type[] {keyValuePair.Key.PropertyType})
-                                    .Invoke(repo, new object[] {keyValuePair.Key.GetValue(entity)});
+                                    .GetMethod("Save", new[] {keyValuePair.Key.PropertyType})
+                                    .Invoke(repo, new[] {keyValuePair.Key.GetValue(entity)});
                                 object nestedId = nestedEntity.GetType()
                                     .GetProperties()
-                                    .First(propertyInfo => propertyInfo.IsDefined(typeof(IdentityAttribute)))
+                                    .First(propertyInfo => propertyInfo.IsDefined(typeof (IdentityAttribute)))
                                     .GetValue(nestedEntity);
                                 cmd.Parameters.Add(attribute.Column, nestedId);
                                 break;

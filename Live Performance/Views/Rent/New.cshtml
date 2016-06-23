@@ -1,0 +1,37 @@
+﻿@model Live_Performance.Entity.Rent
+
+@{
+    ViewBag.Title = "Nieuwe Huur";
+}
+
+<h1>@ViewBag.Title</h1>
+@using (Html.BeginForm("New", "Rent"))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+    @Html.HiddenFor(rent => rent.Id)
+    @Html.HiddenFor(rent => rent.User)
+
+    <div class="form-group">
+        @Html.LabelFor(rent => rent.Begin, new {@class = "control-label"})
+        @Html.EditorFor(rent => rent.Begin, new {htmlAttributes = new {@class = "form-control"}})
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(rent => rent.End, new {@class = "control-label"})
+        @Html.EditorFor(rent => rent.End, new {htmlAttributes = new {@class = "form-control"}})
+    </div>
+
+    for (int i = 0; i < 5; i++)
+    {
+        <div class="form-group">
+            @Html.LabelFor(rent => rent.Articles[i].Article, new {@class = "control-label"})
+            @Html.DropDownListFor(rent => rent.Articles[i].Article.Id, (IEnumerable<SelectListItem>) ViewBag.AvailableArticles, new {@class = "form-control"})
+            @Html.LabelFor(rent => rent.Articles[i].Amount, new {@class = "control-label"})
+            @Html.EditorFor(rent => rent.Articles[i].Amount, new {htmlAttributes = new {@class = "form-control"}})
+        </div>
+    }
+
+    <input class="btn btn-primary btn-raised" type="submit" value="Toevoegen"/>
+    <input class="btn btn-raised" type="button" onclick="location.href = '@Url.Action("Index", "Rent")'" value="Annuleren"/>
+}

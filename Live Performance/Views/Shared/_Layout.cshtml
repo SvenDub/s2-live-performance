@@ -23,6 +23,9 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
+                <li>
+                    @Html.ActionLink("Huren", "Index", "Rent")
+                </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 @if (Session[SessionVars.User] == null)
