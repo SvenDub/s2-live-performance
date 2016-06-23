@@ -15,10 +15,20 @@ namespace Live_Performance.Models
         {
             // Amount of days, same day counts as 1
             int days = (rent.End - rent.Begin).Days + 1;
+            if (days < 1)
+            {
+                return 0;
+            }
 
             // Costs for boats (rent only)
             int boatCosts = rent.Boats.Sum(boatRent => boatRent.Cost)*days;
             int boatAmount = rent.Boats.Count;
+
+            // No boats
+            if (boatAmount == 0)
+            {
+                return 0;
+            }
 
             // Costs for areas
             int areaCosts = rent.Areas.Sum(areaRent => areaRent.Cost)*boatAmount*days;

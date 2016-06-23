@@ -235,6 +235,30 @@ namespace Live_Performance.Tests
             Assert.AreEqual(7, Budget.LakesForBudget(rent, 2550 + 875));
         }
 
+        [Test]
+        public void TestNoBoats()
+        {
+            Rent rent = new Rent
+            {
+                Begin = DateTime.Today,
+                End = DateTime.Today,
+                Boats = new List<BoatRent>(),
+                Articles = new List<ArticleRent>(),
+                Areas = new List<AreaRent>()
+            };
+
+            Assert.AreEqual(0, Budget.LakesForBudget(rent, 5000));
+            Assert.AreEqual(0, Budget.LakesForBudget(rent, 3300));
+            Assert.AreEqual(0, Budget.LakesForBudget(rent, 3299));
+            Assert.AreEqual(0, Budget.LakesForBudget(rent, 1500));
+            Assert.AreEqual(0, Budget.LakesForBudget(rent, 1501));
+            Assert.AreEqual(0, Budget.LakesForBudget(rent, 1600));
+            Assert.AreEqual(0, Budget.LakesForBudget(rent, 2000));
+            Assert.AreEqual(0, Budget.LakesForBudget(rent, 2150));
+            Assert.AreEqual(0, Budget.LakesForBudget(rent, 2400));
+            Assert.AreEqual(0, Budget.LakesForBudget(rent, 2550));
+        }
+
         private class MotorBoat : BoatType
         {
             public MotorBoat()
