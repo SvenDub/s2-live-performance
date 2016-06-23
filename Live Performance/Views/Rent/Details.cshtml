@@ -13,6 +13,10 @@
     return;
 }
 
+<input class="btn btn-raised" type="button" onclick="location.href = '/api/Rent/@Model.Id?type=json'" value="Export JSON" />
+<input class="btn btn-raised" type="button" onclick="location.href = '/api/Rent/@Model.Id?type=xml'" value="Export XML" />
+<br/>
+
 @Html.DisplayNameFor(rent => rent.User): @Html.DisplayFor(rent => rent.User.Name)<br>
 Meren: @Budget.LakesForBudget(Model, Model.Budget)
 

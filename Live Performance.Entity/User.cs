@@ -1,26 +1,32 @@
 ﻿using Live_Performance.Persistence;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
 using DataType = System.ComponentModel.DataAnnotations.DataType;
 
 namespace Live_Performance.Entity
 {
     [Entity(Table = "\"USER\"")]
+    [DataContract]
     public class User
     {
         [Identity]
+        [System.Runtime.Serialization.DataMember]
         public int Id { get; set; }
 
-        [DataMember(Column = "NAME")]
+        [Persistence.DataMember(Column = "NAME")]
+        [System.Runtime.Serialization.DataMember]
         public string Name { get; set; }
 
-        [DataMember(Column = "EMAIL")]
+        [Persistence.DataMember(Column = "EMAIL")]
+        [System.Runtime.Serialization.DataMember]
         public string Email { get; set; }
 
-        [DataMember(Column = "PASSWORD")]
+        [Persistence.DataMember(Column = "PASSWORD")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [DataMember(Column = "ADMIN")]
+        [Persistence.DataMember(Column = "ADMIN")]
+        [System.Runtime.Serialization.DataMember]
         public bool Admin { get; set; }
 
         protected bool Equals(User other)

@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Web;
 using System.Web.Http;
 using Inject;
 using Live_Performance.Entity;
@@ -18,6 +21,8 @@ namespace Live_Performance.Controllers
         [HttpGet]
         public List<Rent> Index()
         {
+            HttpContext.Current.Response.AppendHeader("Content-Disposition", "attachment");
+
             List<Rent> rents = _repository.FindAll();
             rents.ForEach(rent =>
             {
@@ -25,6 +30,7 @@ namespace Live_Performance.Controllers
                 rent.Boats = _boatRentRepository.FindAllWhere(boatRent => boatRent.Rent == rent.Id);
                 rent.Areas = _areaRentRepository.FindAllWhere(areaRent => areaRent.Rent == rent.Id);
             });
+            
             return rents;
         }
 
@@ -32,6 +38,8 @@ namespace Live_Performance.Controllers
         [HttpGet]
         public Rent Get(int id)
         {
+            HttpContext.Current.Response.AppendHeader("Content-Disposition", "attachment");
+
             Rent rent = _repository.FindOne(id);
             rent.Articles = _articleRentRepository.FindAllWhere(articleRent => articleRent.Rent == rent.Id);
             rent.Boats = _boatRentRepository.FindAllWhere(boatRent => boatRent.Rent == rent.Id);

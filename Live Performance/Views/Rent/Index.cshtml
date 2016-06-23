@@ -8,6 +8,8 @@
 <h1>@ViewBag.Title</h1>
 
 <input class="btn btn-primary btn-raised" type="button" onclick="location.href = '@Url.Action("New", "Rent")'" value="Nieuw"/>
+<input class="btn btn-raised" type="button" onclick="location.href = '/api/Rent?type=json'" value="Export JSON"/>
+<input class="btn btn-raised" type="button" onclick="location.href = '/api/Rent?type=xml'" value="Export XML" />
 <br/>
 <br/>
 

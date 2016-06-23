@@ -30,6 +30,16 @@ namespace Live_Performance
                 .SerializerSettings
                 .DefaultValueHandling = DefaultValueHandling.Include;
 
+            GlobalConfiguration.Configuration
+                .Formatters
+                .JsonFormatter
+                .SerializerSettings
+                .Formatting = Formatting.Indented;
+            GlobalConfiguration.Configuration
+                .Formatters
+                .XmlFormatter
+                .Indent = true;
+
             GlobalConfiguration.Configuration.Formatters.JsonFormatter.MediaTypeMappings.Add(
                 new QueryStringMapping("type", "json", new MediaTypeHeaderValue("application/json")));
 
