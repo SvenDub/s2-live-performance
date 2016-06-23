@@ -43,6 +43,37 @@ namespace Live_Performance.Tests
         }
 
         [Test]
+        public void TestOneMotorizedNoBudget()
+        {
+            Rent rent = new Rent
+            {
+                Begin = DateTime.Today,
+                End = DateTime.Today,
+                Boats = new List<BoatRent>
+                {
+                    new BoatRent
+                    {
+                        Boat = new Boat
+                        {
+                            BoatType = new MotorBoat()
+                        },
+                        Cost = 1500
+                    }
+                },
+                Articles = new List<ArticleRent>(),
+                Areas = new List<AreaRent>()
+            };
+
+            Assert.AreEqual(0, Budget.LakesForBudget(rent, -1000));
+            Assert.AreEqual(0, Budget.LakesForBudget(rent, 0));
+            Assert.AreEqual(0, Budget.LakesForBudget(rent, 1400));
+            Assert.AreEqual(0, Budget.LakesForBudget(rent, 1499));
+            Assert.AreEqual(0, Budget.LakesForBudget(rent, 1500));
+            Assert.AreEqual(0, Budget.LakesForBudget(rent, 1501));
+            Assert.AreEqual(1, Budget.LakesForBudget(rent, 1600));
+        }
+
+        [Test]
         public void TestTwoMotorized()
         {
             Rent rent = new Rent

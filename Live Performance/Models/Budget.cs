@@ -29,6 +29,12 @@ namespace Live_Performance.Models
             // Budget left for lakes
             int availableBudget = budget - boatCosts - areaCosts - articleCosts;
 
+            // No budget left
+            if (availableBudget <= 0)
+            {
+                return 0;
+            }
+
             // Costs per lake
             double lakeCost;
 
