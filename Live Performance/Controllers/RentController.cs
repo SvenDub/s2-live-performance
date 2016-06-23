@@ -16,6 +16,7 @@ namespace Live_Performance.Controllers
         private readonly IRepository<Article> _articleRepository = Injector.Resolve<IRepository<Article>>();
         private readonly IRepository<ArticleRent> _articleRentRepository = Injector.Resolve<IRepository<ArticleRent>>();
         private readonly IRepository<Boat> _boatRepository = Injector.Resolve<IRepository<Boat>>();
+        private readonly IRepository<BoatRent> _boatRentRepository = Injector.Resolve<IRepository<BoatRent>>();
 
         public ActionResult Index()
         {
@@ -33,6 +34,7 @@ namespace Live_Performance.Controllers
             User user = (User) Session[SessionVars.User];
             Rent rent = Repository.FindOne(id);
             rent.Articles = _articleRentRepository.FindAllWhere(articleRent => articleRent.Rent == id);
+            rent.Boats = _boatRentRepository.FindAllWhere(boatRent => boatRent.Rent == id);
 
             if (user.Admin || rent.User == user)
             {
@@ -45,7 +47,7 @@ namespace Live_Performance.Controllers
         public ActionResult New()
         {
             ViewBag.AvailableArticles = new SelectList(new List<Article> {new Article {Id = -1, Name = "Geen"}}.Concat(_articleRepository.FindAll()), "Id", "Name");
-            ViewBag.AvailableBoats = new SelectList(new List<Boat> {new Boat {Id = -1, Name = "Geen"} }.Concat(_boatRepository.FindAll()));
+            ViewBag.AvailableBoats = new SelectList(new List<Boat> {new Boat {Id = -1, Name = "Geen"} }.Concat(_boatRepository.FindAll()), "Id", "Display");
 
             return View();
         }
@@ -57,14 +59,19 @@ namespace Live_Performance.Controllers
             rent.User = user;
             rent.Id = 0;
 
-            rent.Articles
-                .RemoveAll(articleRent => articleRent.Article.Id == -1 || articleRent.Amount <= 0);
-            rent.Articles
-                .ForEach(articleRent =>
-                {
-                    articleRent.Article = _articleRepository.FindOne(articleRent.Article.Id);
-                    articleRent.Cost = articleRent.Article.Cost;
-                });
+            rent.Articles.RemoveAll(articleRent => articleRent.Article.Id == -1 || articleRent.Amount <= 0);
+            rent.Articles.ForEach(articleRent =>
+            {
+                articleRent.Article = _articleRepository.FindOne(articleRent.Article.Id);
+                articleRent.Cost = articleRent.Article.Cost;
+            });
+
+            rent.Boats.RemoveAll(boatRent => boatRent.Boat.Id == -1);
+            rent.Boats.ForEach(boatRent =>
+            {
+                boatRent.Boat = _boatRepository.FindOne(boatRent.Boat.Id);
+                boatRent.Cost = boatRent.Boat.BoatType.Cost;
+            });
 
             Rent saved = Repository.Save(rent);
             return RedirectToAction("Details", new {id = saved.Id});

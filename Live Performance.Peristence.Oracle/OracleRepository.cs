@@ -128,6 +128,7 @@ namespace Live_Performance.Peristence.Oracle
                 {
                     using (OracleCommand cmd = connection.CreateCommand())
                     {
+                        cmd.BindByName = true;
                         cmd.CommandText = $"DELETE FROM {_entityAttribute.Table} WHERE {_identityAttribute.Column}=:Id";
                         cmd.Parameters.Add("Id", id);
                         cmd.ExecuteNonQuery();
@@ -184,6 +185,7 @@ namespace Live_Performance.Peristence.Oracle
                 {
                     using (OracleCommand cmd = connection.CreateCommand())
                     {
+                        cmd.BindByName = true;
                         cmd.CommandText =
                             $"SELECT COUNT(*) FROM {_entityAttribute.Table} WHERE {_identityAttribute.Column}=:Id";
                         cmd.Parameters.Add("Id", id);
@@ -205,6 +207,7 @@ namespace Live_Performance.Peristence.Oracle
                 {
                     using (OracleCommand cmd = connection.CreateCommand())
                     {
+                        cmd.BindByName = true;
                         cmd.CommandText = $"SELECT \"{string.Join("\", \"", DataMembers.Values)}\" " +
                                           $"FROM {_entityAttribute.Table}";
 
@@ -241,6 +244,7 @@ namespace Live_Performance.Peristence.Oracle
                 {
                     using (OracleCommand cmd = connection.CreateCommand())
                     {
+                        cmd.BindByName = true;
                         cmd.CommandText = $"SELECT \"{string.Join("\", \"", DataMembers.Values)}\" " +
                                           $"FROM {_entityAttribute.Table} " +
                                           $"WHERE {_identityAttribute.Column}=:Id";
@@ -294,6 +298,7 @@ namespace Live_Performance.Peristence.Oracle
                         parameters[i] = $"\"{keyValuePair.Value}\"=:{keyValuePair.Value}";
                     }
 
+                    cmd.BindByName = true;
                     cmd.CommandText =
                         $"UPDATE {_entityAttribute.Table} " +
                         $"SET {string.Join(", ", parameters)} " +
@@ -331,6 +336,7 @@ namespace Live_Performance.Peristence.Oracle
                         parameters[i] = $":{keyValuePair.Value}";
                     }
 
+                    cmd.BindByName = true;
                     cmd.CommandText =
                         $"INSERT INTO {_entityAttribute.Table} (\"{string.Join("\", \"", DataMembersWithoutIdentity.Values)}\") " +
                         $"VALUES ({string.Join(", ", parameters)}) RETURNING \"{_identityAttribute.Column}\" INTO :AUTOINCREMENT";
@@ -489,10 +495,7 @@ namespace Live_Performance.Peristence.Oracle
                     {
                         object value = reader[keyValuePair.Value];
 
-                        if (keyValuePair.Key.PropertyType == typeof (int))
-                        {
-                            value = Convert.ToInt32(value);
-                        }
+                        value = ConvertValue(keyValuePair, value);
 
                         keyValuePair.Key.SetValue(entity, value);
                     }
@@ -508,15 +511,8 @@ namespace Live_Performance.Peristence.Oracle
                             {
                                 object value = reader[keyValuePair.Value];
 
-                                // Boolean
-                                if (keyValuePair.Key.PropertyType == typeof (bool))
-                                {
-                                    value = Convert.ToBoolean(value);
-                                }
-                                else if (keyValuePair.Key.PropertyType == typeof (int))
-                                {
-                                    value = Convert.ToInt32(value);
-                                }
+                                value = ConvertValue(keyValuePair, value);
+
                                 keyValuePair.Key.SetValue(entity, value);
                                 break;
                             }
@@ -618,14 +614,14 @@ namespace Live_Performance.Peristence.Oracle
             {
                 foreach (KeyValuePair<PropertyInfo, string> keyValuePair in DataMembers)
                 {
-                    /*if (keyValuePair.Key.IsDefined(typeof (IdentityAttribute)))
+                    if (keyValuePair.Key.IsDefined(typeof (IdentityAttribute)))
                     {
                         IdentityAttribute attribute =
                             keyValuePair.Key.GetCustomAttribute<IdentityAttribute>();
 
                         cmd.Parameters.Add(attribute.Column, keyValuePair.Key.GetValue(entity));
                     }
-                    else */if (keyValuePair.Key.IsDefined(typeof (DataMemberAttribute)))
+                    else if (keyValuePair.Key.IsDefined(typeof (DataMemberAttribute)))
                     {
                         DataMemberAttribute attribute =
                             keyValuePair.Key.GetCustomAttribute<DataMemberAttribute>();
@@ -672,6 +668,27 @@ namespace Live_Performance.Peristence.Oracle
                 throw new EntityException(
                     "The data type does not match and conversion is not yet implemented for this type.", e);
             }
+        }
+
+        private static object ConvertValue(KeyValuePair<PropertyInfo, string> keyValuePair, object value)
+        {
+            if (keyValuePair.Key.PropertyType == typeof(bool))
+            {
+                value = Convert.ToBoolean(value);
+            }
+            else if (keyValuePair.Key.PropertyType == typeof(int))
+            {
+                value = Convert.ToInt32(value);
+            }
+            else if (keyValuePair.Key.PropertyType == typeof(int?))
+            {
+                value = Convert.ToInt32(value);
+            }
+            else if (keyValuePair.Key.PropertyType == typeof(double?))
+            {
+                value = Convert.ToDouble(value);
+            }
+            return value;
         }
 
         /// <summary>

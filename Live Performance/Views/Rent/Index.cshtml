@@ -7,6 +7,10 @@
 
 <h1>@ViewBag.Title</h1>
 
+<input class="btn btn-primary btn-raised" type="button" onclick="location.href = '@Url.Action("New", "Rent")'" value="Nieuw"/>
+<br/>
+<br/>
+
 <div class="list-group">
     @foreach (Rent rent in Model)
     {

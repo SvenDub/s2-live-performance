@@ -22,16 +22,54 @@
         @Html.EditorFor(rent => rent.End, new {htmlAttributes = new {@class = "form-control"}})
     </div>
 
-    for (int i = 0; i < 5; i++)
-    {
-        <div class="form-group">
-            @Html.LabelFor(rent => rent.Articles[i].Article, new {@class = "control-label"})
-            @Html.DropDownListFor(rent => rent.Articles[i].Article.Id, (IEnumerable<SelectListItem>) ViewBag.AvailableArticles, new {@class = "form-control"})
-            @Html.LabelFor(rent => rent.Articles[i].Amount, new {@class = "control-label"})
-            @Html.EditorFor(rent => rent.Articles[i].Amount, new {htmlAttributes = new {@class = "form-control"}})
+    <div class="panel-group" id="accordion">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#artikelen">
+                        Artikelen
+                    </a>
+                </h4>
+            </div>
+            <div id="artikelen" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    @for (int i = 0; i < 5; i++)
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(rent => rent.Articles[i].Article, new {@class = "control-label"})
+                            @Html.DropDownListFor(rent => rent.Articles[i].Article.Id, (IEnumerable<SelectListItem>) ViewBag.AvailableArticles, new {@class = "form-control"})
+                            @Html.LabelFor(rent => rent.Articles[i].Amount, new {@class = "control-label"})
+                            @Html.EditorFor(rent => rent.Articles[i].Amount, new {htmlAttributes = new {@class = "form-control"}})
+                        </div>
+                    }
+                </div>
+            </div>
         </div>
-    }
 
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#boten">
+                        Boten
+                    </a>
+                </h4>
+            </div>
+            <div id="boten" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    @for (int i = 0; i < 5; i++)
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(rent => rent.Boats[i].Boat, new { @class = "control-label" })
+                            @Html.DropDownListFor(rent => rent.Boats[i].Boat.Id, (IEnumerable<SelectListItem>)ViewBag.AvailableBoats, new { @class = "form-control" })
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <br/>
+    
     <input class="btn btn-primary btn-raised" type="submit" value="Toevoegen"/>
     <input class="btn btn-raised" type="button" onclick="location.href = '@Url.Action("Index", "Rent")'" value="Annuleren"/>
 }

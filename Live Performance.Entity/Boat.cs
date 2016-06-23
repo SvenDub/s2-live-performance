@@ -13,5 +13,7 @@ namespace Live_Performance.Entity
 
         [DataMember(Column = "NAME")]
         public string Name { get; set; }
+
+        public string Display => Name + (BoatType != null ? $"({BoatType.Name})" : "");
     }
 }
